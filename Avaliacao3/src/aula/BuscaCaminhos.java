@@ -7,10 +7,12 @@ public class BuscaCaminhos extends RecursiveTask<Integer> {
     int n;
     int m;
     int quantidade = 0;
+    boolean div;
 
-    public BuscaCaminhos(int n, int m) {
+    public BuscaCaminhos(int n, int m, boolean estado) {
         this.n = n;
         this.m = m;
+        this.div = estado;
     }
 
     public int contarCaminhos(int m, int n) {
@@ -20,25 +22,22 @@ public class BuscaCaminhos extends RecursiveTask<Integer> {
         if (n == 0 || m == 0) {
             return 1;
         }
-        return (contarCaminhos(m-1, n) + contarCaminhos(m, n - 1));
+        return (contarCaminhos(m - 1, n) + contarCaminhos(m, n - 1));
     }
 
     @Override
     protected Integer compute() {
-
-        if (m == 0 && n == 0) {
-            contarCaminhos(m, n);
-        } else if (this.m > 0 || this.n > 0) {
-            quantidade += contarCaminhos(m, n);
-        }else{
-            BuscaCaminhos by = new BuscaCaminhos(1,2);
-            BuscaCaminhos bx = new BuscaCaminhos(2,1);
+        if (div == false) {
+            BuscaCaminhos by = new BuscaCaminhos(m-1,n,true);
+            BuscaCaminhos bx = new BuscaCaminhos(m,n-1,true);
             by.fork();
             bx.fork();
-            by.join();
-            bx.join();
+            quantidade += by.join();
+            quantidade += bx.join();
+        } else {
+            quantidade = contarCaminhos(m, n);
         }
-            return quantidade;
-        }
-
+        return quantidade;
     }
+
+}
